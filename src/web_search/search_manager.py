@@ -1,6 +1,6 @@
 """Search manager for coordinating different search providers."""
 
-from .config import load_all_provider_configs, ProviderConfig
+from .config import ProviderConfig, load_all_provider_configs
 from .providers.base import BaseSearchProvider
 from .providers.claude_provider import ClaudeProvider
 from .providers.duckduckgo_provider import DuckDuckGoProvider
