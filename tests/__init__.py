@@ -1,0 +1,1 @@
+"""Tests for the web search MCP server."""
