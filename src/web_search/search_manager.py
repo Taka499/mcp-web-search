@@ -1,20 +1,13 @@
 """Search manager for coordinating different search providers."""
 
-import os
-
-from dotenv import load_dotenv
-
-load_dotenv()
-
+from .config import load_all_provider_configs, ProviderConfig
 from .providers.base import BaseSearchProvider
 from .providers.claude_provider import ClaudeProvider
 from .providers.duckduckgo_provider import DuckDuckGoProvider
 from .providers.perplexity_provider import PerplexityProvider
 from .providers.serpapi_provider import SerpAPIProvider
 from .providers.tavily_provider import TavilyProvider
-from .search_types import SearchConfig, SearchProvider, SearchResponse
-
-# Environment variables are loaded above
+from .search_types import SearchProvider, SearchResponse
 
 
 class SearchManager:
@@ -34,51 +27,8 @@ class SearchManager:
         default_provider: SearchProvider = SearchProvider.DUCKDUCKGO,
     ) -> None:
         self.default_provider = default_provider
-        self._configs: dict[SearchProvider, SearchConfig] = {}
-        self._load_configs()
-
-    def _load_configs(self) -> None:
-        """Load configurations for all providers from environment variables."""
-        # SerpAPI configuration
-        self._configs[SearchProvider.SERPAPI] = SearchConfig(
-            provider=SearchProvider.SERPAPI,
-            api_key=os.getenv("SERPAPI_API_KEY"),
-            max_results=int(os.getenv("SERPAPI_MAX_RESULTS", "10")),
-            serpapi_engine=os.getenv("SERPAPI_ENGINE", "google"),
-            timeout=int(os.getenv("SEARCH_TIMEOUT", "30")),
-        )
-
-        # Perplexity configuration
-        self._configs[SearchProvider.PERPLEXITY] = SearchConfig(
-            provider=SearchProvider.PERPLEXITY,
-            api_key=os.getenv("PERPLEXITY_API_KEY"),
-            max_results=int(os.getenv("PERPLEXITY_MAX_RESULTS", "10")),
-            perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar-pro"),
-            timeout=int(os.getenv("SEARCH_TIMEOUT", "30")),
-        )
-
-        # DuckDuckGo configuration (no API key required)
-        self._configs[SearchProvider.DUCKDUCKGO] = SearchConfig(
-            provider=SearchProvider.DUCKDUCKGO,
-            max_results=int(os.getenv("DUCKDUCKGO_MAX_RESULTS", "10")),
-            duckduckgo_safesearch=os.getenv("DUCKDUCKGO_SAFESEARCH", "moderate"),
-            timeout=int(os.getenv("SEARCH_TIMEOUT", "30")),
-        )
-
-        # Tavily configuration
-        self._configs[SearchProvider.TAVILY] = SearchConfig(
-            provider=SearchProvider.TAVILY,
-            api_key=os.getenv("TAVILY_API_KEY"),
-            max_results=int(os.getenv("TAVILY_MAX_RESULTS", "10")),
-            timeout=int(os.getenv("SEARCH_TIMEOUT", "30")),
-        )
-
-        # Claude configuration
-        self._configs[SearchProvider.CLAUDE] = SearchConfig(
-            provider=SearchProvider.CLAUDE,
-            api_key=os.getenv("ANTHROPIC_API_KEY"),
-            max_results=int(os.getenv("CLAUDE_MAX_RESULTS", "10")),
-            timeout=int(os.getenv("SEARCH_TIMEOUT", "30")),
+        self._configs: dict[SearchProvider, ProviderConfig] = (
+            load_all_provider_configs()
         )
 
     def get_available_providers(self) -> dict[str, bool]:
