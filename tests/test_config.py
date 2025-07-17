@@ -67,9 +67,15 @@ class TestBasicConfigModel:
 class TestProviderSpecificConfigs:
     """Test provider-specific configuration models."""
 
-    def test_serpapi_config_creation(self):
+    def test_serpapi_config_creation(self, monkeypatch):
         """Should create SerpAPI config with provider-specific fields."""
-        config = SerpAPIConfig(api_key="test-key")
+        # Override environment variables for testing
+        monkeypatch.setenv("SERPAPI_API_KEY", "test-key")
+        monkeypatch.setenv("SERPAPI_ENGINE", "google")
+        monkeypatch.setenv("SERPAPI_MAX_RESULTS", "10")
+        monkeypatch.setenv("SEARCH_TIMEOUT", "30")
+        
+        config = SerpAPIConfig()
 
         assert config.provider == SearchProvider.SERPAPI
         assert config.api_key == "test-key"
@@ -77,9 +83,15 @@ class TestProviderSpecificConfigs:
         assert config.max_results == 10
         assert config.timeout == 30
 
-    def test_perplexity_config_creation(self):
+    def test_perplexity_config_creation(self, monkeypatch):
         """Should create Perplexity config with model selection."""
-        config = PerplexityConfig(api_key="test-key")
+        # Override environment variables for testing
+        monkeypatch.setenv("PERPLEXITY_API_KEY", "test-key")
+        monkeypatch.setenv("PERPLEXITY_MODEL", "sonar-pro")
+        monkeypatch.setenv("PERPLEXITY_MAX_RESULTS", "10")
+        monkeypatch.setenv("SEARCH_TIMEOUT", "30")
+        
+        config = PerplexityConfig()
 
         assert config.provider == SearchProvider.PERPLEXITY
         assert config.api_key == "test-key"
@@ -97,18 +109,28 @@ class TestProviderSpecificConfigs:
         assert config.max_results == 10
         assert config.timeout == 30
 
-    def test_tavily_config_creation(self):
+    def test_tavily_config_creation(self, monkeypatch):
         """Should create Tavily config with required API key."""
-        config = TavilyConfig(api_key="test-key")
+        # Override environment variables for testing
+        monkeypatch.setenv("TAVILY_API_KEY", "test-key")
+        monkeypatch.setenv("TAVILY_MAX_RESULTS", "10")
+        monkeypatch.setenv("SEARCH_TIMEOUT", "30")
+        
+        config = TavilyConfig()
 
         assert config.provider == SearchProvider.TAVILY
         assert config.api_key == "test-key"
         assert config.max_results == 10
         assert config.timeout == 30
 
-    def test_claude_config_creation(self):
+    def test_claude_config_creation(self, monkeypatch):
         """Should create Claude config with Anthropic API key."""
-        config = ClaudeConfig(api_key="test-key")
+        # Override environment variables for testing
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+        monkeypatch.setenv("CLAUDE_MAX_RESULTS", "10")
+        monkeypatch.setenv("SEARCH_TIMEOUT", "30")
+        
+        config = ClaudeConfig()
 
         assert config.provider == SearchProvider.CLAUDE
         assert config.api_key == "test-key"
