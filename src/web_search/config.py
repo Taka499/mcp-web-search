@@ -20,11 +20,11 @@ class Config(BaseModel):
 
 class ProviderConfig(BaseSettings):
     """Base settings class for provider-specific configuration."""
-    
+
     model_config = ConfigDict(
-        env_file=".env", 
+        env_file=".env",
         env_file_encoding="utf-8",
-        extra="ignore"  # Ignore extra environment variables
+        extra="ignore",  # Ignore extra environment variables
     )
 
 
@@ -59,7 +59,9 @@ class DuckDuckGoConfig(ProviderConfig):
 
     provider: SearchProvider = SearchProvider.DUCKDUCKGO
     api_key: str | None = None  # DuckDuckGo doesn't need API key
-    duckduckgo_safesearch: str = Field(default="moderate", alias="DUCKDUCKGO_SAFESEARCH")
+    duckduckgo_safesearch: str = Field(
+        default="moderate", alias="DUCKDUCKGO_SAFESEARCH"
+    )
     max_results: int = Field(default=10, ge=1, le=100, alias="DUCKDUCKGO_MAX_RESULTS")
     timeout: int = Field(default=30, ge=1, le=300, alias="SEARCH_TIMEOUT")
     safe_search: bool = Field(default=True, alias="SAFE_SEARCH")
@@ -92,7 +94,9 @@ class ClaudeConfig(ProviderConfig):
 
 
 # Factory functions for loading configurations
-def load_config_from_environment(provider: SearchProvider) -> Union[ProviderConfig, None]:
+def load_config_from_environment(
+    provider: SearchProvider,
+) -> Union[ProviderConfig, None]:
     """Load configuration for a specific provider from environment variables."""
     config_classes = {
         SearchProvider.SERPAPI: SerpAPIConfig,
@@ -101,23 +105,25 @@ def load_config_from_environment(provider: SearchProvider) -> Union[ProviderConf
         SearchProvider.TAVILY: TavilyConfig,
         SearchProvider.CLAUDE: ClaudeConfig,
     }
-    
+
     config_class = config_classes.get(provider)
     if config_class is None:
         return None
-    
+
     return config_class()
 
 
-def load_all_provider_configs(providers: list[SearchProvider] = None) -> dict[SearchProvider, ProviderConfig]:
+def load_all_provider_configs(
+    providers: list[SearchProvider] = None,
+) -> dict[SearchProvider, ProviderConfig]:
     """Load configurations for all or specified providers from environment variables."""
     if providers is None:
         providers = list(SearchProvider)
-    
+
     configs = {}
     for provider in providers:
         config = load_config_from_environment(provider)
         if config is not None:
             configs[provider] = config
-    
+
     return configs
