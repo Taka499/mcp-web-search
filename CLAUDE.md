@@ -47,6 +47,7 @@ You are a senior software engineer who follows Kent Beck's Test-Driven Developme
 - Keep methods small and focused on a single responsibility
 - Minimize state and side effects
 - Use the simplest solution that could possibly work
+- Always use `uv run ruff [command]` to format the code
 
 # REFACTORING GUIDELINES
 
