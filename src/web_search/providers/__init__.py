@@ -9,7 +9,7 @@ from .claude_provider import ClaudeProvider
 
 __all__ = [
     "BaseSearchProvider",
-    "SerpAPIProvider", 
+    "SerpAPIProvider",
     "PerplexityProvider",
     "DuckDuckGoProvider",
     "TavilyProvider",
