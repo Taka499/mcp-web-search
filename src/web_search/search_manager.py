@@ -78,26 +78,31 @@ class SearchManager:
         max_results_per_provider: int = 5,
     ) -> dict[str, SearchResponse]:
         """Perform search across multiple providers simultaneously."""
-        results = {}
+        import asyncio
 
-        # TODO: Implement concurrent searches
-        for provider in providers:
+        async def search_single_provider(provider: SearchProvider):
             try:
                 response = await self.search(
                     query=query,
                     provider=provider,
                     max_results=max_results_per_provider,
                 )
-                results[provider.value] = response
+                return provider.value, response
             except Exception as e:
                 # Log error but continue with other providers
-                results[provider.value] = SearchResponse(
+                return provider.value, SearchResponse(
                     query=query,
                     provider=provider,
                     results=[],
                     metadata={"error": str(e)},
                 )
 
+        # Execute all searches concurrently
+        tasks = [search_single_provider(provider) for provider in providers]
+        search_results = await asyncio.gather(*tasks)
+
+        # Convert to dictionary
+        results = dict(search_results)
         return results
 
     def get_fallback_chain(self) -> list[SearchProvider]:
