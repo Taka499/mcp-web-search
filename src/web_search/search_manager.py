@@ -80,6 +80,7 @@ class SearchManager:
         max_results_per_provider: int = 5,
     ) -> dict[str, SearchResponse]:
         """Perform search across multiple providers simultaneously."""
+
         async def search_single_provider(provider: SearchProvider):
             try:
                 response = await self.search(

@@ -1,12 +1,11 @@
 """Base search provider interface."""
 
 from abc import ABC, abstractmethod
-from typing import List
-import time
+
 import httpx
 
-from web_search.search_types import SearchResponse, SearchResult
 from web_search.config import ProviderConfig
+from web_search.search_types import SearchResponse, SearchResult
 
 
 class BaseSearchProvider(ABC):
@@ -26,17 +25,15 @@ class BaseSearchProvider(ABC):
     @abstractmethod
     async def search(self, query: str) -> SearchResponse:
         """Perform a search query and return results."""
-        pass
 
     @abstractmethod
     def _validate_config(self) -> bool:
         """Validate provider-specific configuration."""
-        pass
 
     def _create_response(
         self,
         query: str,
-        results: List[SearchResult],
+        results: list[SearchResult],
         total_results: int = None,
         search_time: float = None,
         metadata: dict = None,
@@ -62,7 +59,7 @@ class BaseSearchProvider(ABC):
         except httpx.TimeoutException:
             raise Exception(f"Request timeout after {self.config.timeout} seconds")
         except Exception as e:
-            raise Exception(f"Request failed: {str(e)}")
+            raise Exception(f"Request failed: {e!s}")
 
     async def _make_post_request(self, url: str, **kwargs) -> httpx.Response:
         """Make an HTTP POST request with error handling."""
@@ -75,4 +72,4 @@ class BaseSearchProvider(ABC):
         except httpx.TimeoutException:
             raise Exception(f"Request timeout after {self.config.timeout} seconds")
         except Exception as e:
-            raise Exception(f"Request failed: {str(e)}")
+            raise Exception(f"Request failed: {e!s}")

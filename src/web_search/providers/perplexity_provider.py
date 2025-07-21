@@ -1,10 +1,10 @@
 """Perplexity API search provider implementation."""
 
 import time
-from typing import List
+
+from web_search.search_types import SearchResponse, SearchResult
 
 from .base import BaseSearchProvider
-from ..search_types import SearchResponse, SearchResult, SearchProvider
 
 
 class PerplexityProvider(BaseSearchProvider):
@@ -46,7 +46,9 @@ class PerplexityProvider(BaseSearchProvider):
         }
 
         response = await self._make_post_request(
-            self.BASE_URL, headers=headers, json=payload
+            self.BASE_URL,
+            headers=headers,
+            json=payload,
         )
 
         search_time = time.time() - start_time
@@ -61,10 +63,13 @@ class PerplexityProvider(BaseSearchProvider):
         }
 
         return self._create_response(
-            query=query, results=results, search_time=search_time, metadata=metadata
+            query=query,
+            results=results,
+            search_time=search_time,
+            metadata=metadata,
         )
 
-    def _parse_results(self, data: dict, query: str) -> List[SearchResult]:
+    def _parse_results(self, data: dict, query: str) -> list[SearchResult]:
         """Parse Perplexity API response into SearchResult objects."""
         results = []
 

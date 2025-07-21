@@ -210,7 +210,7 @@ class TestEnvironmentVariableDefaults:
                     "TAVILY_",
                     "ANTHROPIC_",
                     "DUCKDUCKGO_",
-                )
+                ),
             ):
                 monkeypatch.delenv(key, raising=False)
 

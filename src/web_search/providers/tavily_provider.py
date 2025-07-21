@@ -1,10 +1,10 @@
 """Tavily AI search provider implementation."""
 
 import time
-from typing import List
+
+from web_search.search_types import SearchResponse, SearchResult
 
 from .base import BaseSearchProvider
-from ..search_types import SearchResponse, SearchResult, SearchProvider
 
 
 class TavilyProvider(BaseSearchProvider):
@@ -42,7 +42,9 @@ class TavilyProvider(BaseSearchProvider):
             payload["language"] = self.config.language
 
         response = await self._make_post_request(
-            self.BASE_URL, headers=headers, json=payload
+            self.BASE_URL,
+            headers=headers,
+            json=payload,
         )
 
         search_time = time.time() - start_time
@@ -58,17 +60,20 @@ class TavilyProvider(BaseSearchProvider):
         }
 
         return self._create_response(
-            query=query, results=results, search_time=search_time, metadata=metadata
+            query=query,
+            results=results,
+            search_time=search_time,
+            metadata=metadata,
         )
 
-    def _parse_results(self, data: dict) -> List[SearchResult]:
+    def _parse_results(self, data: dict) -> list[SearchResult]:
         """Parse Tavily API response into SearchResult objects."""
         results = []
 
         # Add AI-generated answer as first result if available
         if data.get("answer"):
             answer_result = SearchResult(
-                title=f"AI Answer",
+                title="AI Answer",
                 url="",
                 snippet=data["answer"],
                 source="Tavily AI",

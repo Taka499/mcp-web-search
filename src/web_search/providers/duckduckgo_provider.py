@@ -1,13 +1,13 @@
 """DuckDuckGo search provider implementation."""
 
 import time
-import json
-from typing import List
-from urllib.parse import urlencode, quote_plus
+from urllib.parse import urlencode
+
 from bs4 import BeautifulSoup
 
+from web_search.search_types import SearchResponse, SearchResult
+
 from .base import BaseSearchProvider
-from ..search_types import SearchResponse, SearchResult, SearchProvider
 
 
 class DuckDuckGoProvider(BaseSearchProvider):
@@ -43,10 +43,13 @@ class DuckDuckGoProvider(BaseSearchProvider):
         }
 
         return self._create_response(
-            query=query, results=results, search_time=search_time, metadata=metadata
+            query=query,
+            results=results,
+            search_time=search_time,
+            metadata=metadata,
         )
 
-    async def _get_instant_answers(self, query: str) -> List[SearchResult]:
+    async def _get_instant_answers(self, query: str) -> list[SearchResult]:
         """Get instant answers from DuckDuckGo API."""
         try:
             params = {
@@ -101,15 +104,15 @@ class DuckDuckGoProvider(BaseSearchProvider):
 
             return results
 
-        except Exception as e:
+        except Exception:
             # If instant answers fail, continue with web search
             return []
 
-    async def _get_web_results(self, query: str) -> List[SearchResult]:
+    async def _get_web_results(self, query: str) -> list[SearchResult]:
         """Get web search results from DuckDuckGo HTML."""
         try:
             headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
             }
 
             params = {"q": query, "safesearch": self.config.duckduckgo_safesearch}
@@ -150,12 +153,12 @@ class DuckDuckGoProvider(BaseSearchProvider):
                     )
                     results.append(result)
 
-                except Exception as e:
+                except Exception:
                     # Skip malformed results
                     continue
 
             return results
 
-        except Exception as e:
+        except Exception:
             # Return empty results if web search fails
             return []

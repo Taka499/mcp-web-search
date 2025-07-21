@@ -1,9 +1,11 @@
 """Test concurrent behavior in SearchManager.multi_provider_search."""
 
-import pytest
 import asyncio
 import time
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
+
+import pytest
+
 from web_search.search_manager import SearchManager
 from web_search.search_types import SearchProvider, SearchResponse
 
@@ -57,14 +59,13 @@ class TestConcurrentMultiProviderSearch:
             # Make one provider fail, one succeed
             if provider == SearchProvider.DUCKDUCKGO:
                 raise Exception("DuckDuckGo search failed")
-            else:
-                await asyncio.sleep(0.1)  # Simulate delay
-                return SearchResponse(
-                    query=kwargs.get("query", "test"),
-                    provider=provider,
-                    results=[],
-                    search_time=0.1,
-                )
+            await asyncio.sleep(0.1)  # Simulate delay
+            return SearchResponse(
+                query=kwargs.get("query", "test"),
+                provider=provider,
+                results=[],
+                search_time=0.1,
+            )
 
         with patch.object(manager, "search", side_effect=mock_search):
             results = await manager.multi_provider_search(

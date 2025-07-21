@@ -1,10 +1,10 @@
 """Claude search provider implementation using Anthropic's web search capability."""
 
 import time
-from typing import List
+
+from web_search.search_types import SearchResponse, SearchResult
 
 from .base import BaseSearchProvider
-from ..search_types import SearchResponse, SearchResult, SearchProvider
 
 
 class ClaudeProvider(BaseSearchProvider):
@@ -40,19 +40,21 @@ class ClaudeProvider(BaseSearchProvider):
                     "name": "computer",
                     "display_width_px": 1024,
                     "display_height_px": 768,
-                }
+                },
             ],
             "messages": [
                 {
                     "role": "user",
                     "content": f"Search the web for information about: {query}. Provide detailed search results with titles, URLs, and descriptions. Return up to {self.config.max_results} relevant results.",
-                }
+                },
             ],
         }
 
         try:
             response = await self._make_post_request(
-                self.BASE_URL, headers=headers, json=payload
+                self.BASE_URL,
+                headers=headers,
+                json=payload,
             )
 
             search_time = time.time() - start_time
@@ -67,7 +69,10 @@ class ClaudeProvider(BaseSearchProvider):
             }
 
             return self._create_response(
-                query=query, results=results, search_time=search_time, metadata=metadata
+                query=query,
+                results=results,
+                search_time=search_time,
+                metadata=metadata,
             )
 
         except Exception as e:
@@ -89,7 +94,7 @@ class ClaudeProvider(BaseSearchProvider):
                 metadata={"status": "fallback", "error": str(e)},
             )
 
-    def _parse_results(self, data: dict, query: str) -> List[SearchResult]:
+    def _parse_results(self, data: dict, query: str) -> list[SearchResult]:
         """Parse Claude API response into SearchResult objects."""
         results = []
 

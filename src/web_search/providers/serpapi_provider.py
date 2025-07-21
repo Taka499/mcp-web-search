@@ -1,11 +1,11 @@
 """SerpAPI search provider implementation."""
 
 import time
-from typing import List
 from urllib.parse import urlencode
 
+from web_search.search_types import SearchResponse, SearchResult
+
 from .base import BaseSearchProvider
-from ..search_types import SearchResponse, SearchResult, SearchProvider
 
 
 class SerpAPIProvider(BaseSearchProvider):
@@ -61,7 +61,7 @@ class SerpAPIProvider(BaseSearchProvider):
             metadata=metadata,
         )
 
-    def _parse_results(self, data: dict) -> List[SearchResult]:
+    def _parse_results(self, data: dict) -> list[SearchResult]:
         """Parse SerpAPI response into SearchResult objects."""
         results = []
 
