@@ -1,5 +1,7 @@
 """Search manager for coordinating different search providers."""
 
+import asyncio
+
 from .config import ProviderConfig, load_all_provider_configs
 from .providers.base import BaseSearchProvider
 from .providers.claude_provider import ClaudeProvider
@@ -78,8 +80,6 @@ class SearchManager:
         max_results_per_provider: int = 5,
     ) -> dict[str, SearchResponse]:
         """Perform search across multiple providers simultaneously."""
-        import asyncio
-
         async def search_single_provider(provider: SearchProvider):
             try:
                 response = await self.search(
