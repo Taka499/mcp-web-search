@@ -22,7 +22,7 @@ A robust MCP (Model Context Protocol) server that provides web search functional
 - High-quality structured results
 - Advanced search parameters
 
-### 🔑 Perplexity (API Key Required)  
+### 🔑 Perplexity (API Key Required)
 - AI-powered search with citations
 - Real-time information with source attribution
 - Multiple model options (sonar-pro, sonar-small, etc.)
@@ -41,7 +41,6 @@ A robust MCP (Model Context Protocol) server that provides web search functional
 
 ```bash
 # Install dependencies
-cd servers/web_search
 uv sync
 
 # Copy environment template
@@ -84,8 +83,13 @@ Add to your Claude Desktop config (`~/.claude_desktop_config.json`):
 {
   "mcpServers": {
     "web_search": {
-      "command": "python",
-      "args": ["/absolute/path/to/servers/web_search/src/web_search/server.py"]
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/absolute/path/to/repository",
+        "run",
+        "python",
+        "run_server.py"]
     }
   }
 }
@@ -207,9 +211,10 @@ The server includes comprehensive error handling:
 servers/web_search/
 ├── src/web_search/
 │   ├── __init__.py
-│   ├── server.py              # MCP server implementation  
-│   ├── search_manager.py      # Provider coordination
-│   ├── types.py              # Type definitions
+│   ├── config.py
+│   ├── server.py             # MCP server implementation
+│   ├── search_manager.py     # Provider coordination
+│   ├── search_types.py       # Type definitions
 │   └── providers/            # Search provider implementations
 │       ├── __init__.py
 │       ├── base.py           # Base provider class
@@ -219,37 +224,8 @@ servers/web_search/
 │       ├── tavily_provider.py
 │       └── claude_provider.py
 ├── tests/
+├── run_server.py
 ├── pyproject.toml
 ├── .env.example
 └── README.md
-```
-
-### Adding New Providers
-
-1. Create a new provider class inheriting from `BaseSearchProvider`
-2. Implement required methods: `search()` and `_validate_config()`
-3. Add provider to `SearchProvider` enum in `types.py`
-4. Register in `SearchManager.PROVIDERS` mapping
-5. Add configuration loading in `SearchManager._load_configs()`
-
-## Testing
-
-```bash
-# Run tests
-cd servers/web_search
-python -m pytest tests/
-
-# Test individual provider
-python -c "
-import asyncio
-from src.web_search.search_manager import SearchManager
-from src.web_search.types import SearchProvider
-
-async def test():
-    manager = SearchManager()
-    result = await manager.search('test query', SearchProvider.DUCKDUCKGO)
-    print(result)
-
-asyncio.run(test())
-"
 ```
